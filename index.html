@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Shooter Game</title>
+  <style>
+    canvas {
+      border: 1px solid black;
+      display: block;
+      margin: auto;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="gameCanvas" width="800" height="400"></canvas>
+  
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+
+    const player = {
+      x: 50,
+      y: canvas.height / 2,
+      width: 20,
+      height: 20,
+      speed: 5
+    };
+
+    const bullets = [];
+    const bulletSpeed = 10;
+    const bulletWidth = 5;
+    const bulletHeight = 2;
+
+    function drawPlayer() {
+      ctx.fillStyle = "blue";
+      ctx.fillRect(player.x, player.y, player.width, player.height);
+    }
+
+    function drawBullets() {
+      ctx.fillStyle = "red";
+      bullets.forEach(bullet => {
+        ctx.fillRect(bullet.x, bullet.y, bulletWidth, bulletHeight);
+      });
+    }
+
+    function moveBullets() {
+      bullets.forEach(bullet => {
+        bullet.x += bulletSpeed;
+      });
+      bullets.forEach((bullet, index) => {
+        if (bullet.x > canvas.width) {
+          bullets.splice(index, 1);
+        }
+      });
+    }
+
+    function fireBullet() {
+      bullets.push({
+        x: player.x + player.width,
+        y: player.y + player.height / 2 - bulletHeight / 2
+      });
+    }
+
+    function gameLoop() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      drawPlayer();
+      drawBullets();
+      moveBullets();
+
+      requestAnimationFrame(gameLoop);
+    }
+
+    document.addEventListener("keydown", function(event) {
+      if (event.key === " ") {
+        fireBullet();
+      }
+    });
+
+    document.addEventListener("mousemove", function(event) {
+      const rect = canvas.getBoundingClientRect();
+      player.y = event.clientY - rect.top - player.height / 2;
+    });
+
+    gameLoop();
+  </script>
+</body>
+</html>
